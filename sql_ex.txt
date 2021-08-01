@@ -1,0 +1,271 @@
+EX_1
+Найдите номер модели, скорость и размер жесткого диска для всех ПК стоимостью менее 500 дол. Вывести: model, speed и hd
+
+SELECT model, speed, hd
+FROM PC 
+WHERE price < 500
+
+====================================================================================================================================
+EX_2
+Найдите производителей принтеров. Вывести: maker
+
+SELECT Distinct Maker
+from Product where type = 'Printer'
+
+====================================================================================================================================
+EX_3
+Найдите номер модели, объем памяти и размеры экранов ПК-блокнотов, цена которых превышает 1000 дол.
+
+Select model, ram, screen
+From laptop
+Where price > 1000
+
+====================================================================================================================================
+EX_4
+Найдите все записи таблицы Printer для цветных принтеров.
+
+Select *
+From printer
+where color = 'y'
+
+====================================================================================================================================
+EX_5
+Найдите номер модели, скорость и размер жесткого диска ПК, имеющих 12x или 24x CD и цену менее 600 дол.
+
+Select Distinct model, speed, hd
+From PC
+Where (cd = '12x' or cd ='24x') and price < 600
+
+====================================================================================================================================
+EX_6
+Для каждого производителя, выпускающего ПК-блокноты c объёмом жесткого диска не менее 10 Гбайт, найти скорости таких ПК-блокнотов. 
+Вывод: производитель, скорость.
+
+select Distinct maker, speed
+from Product
+join Laptop on Product.model=Laptop.model
+where hd >=10
+
+====================================================================================================================================
+EX_7
+Найдите номера моделей и цены всех имеющихся в продаже продуктов (любого типа) производителя B (латинская буква).
+
+Select laptop.model , laptop.price from laptop inner join product on laptop.model = product.model
+where product.maker= 'B'
+union
+Select pc.model , pc.price from pc inner join product on pc.model = product.model
+where product.maker= 'B'
+union
+Select printer.model , printer.price from printer inner join product on printer.model = product.model
+where product.maker= 'B'
+
+====================================================================================================================================
+EX_8
+Найдите производителя, выпускающего ПК, но не ПК-блокноты.
+
+select maker from product where type='PC' and maker not in (select maker from product where type = 'Laptop') group by maker
+
+====================================================================================================================================
+EX_9
+Найдите производителей ПК с процессором не менее 450 Мгц. Вывести: Maker
+
+Select distinct maker
+from product
+inner join pc
+on product.model = pc.model
+where speed >= 450
+
+====================================================================================================================================
+EX_10
+Найдите модели принтеров, имеющих самую высокую цену. Вывести: model, price
+
+Select distinct model,price
+from printer
+where price = (select max(price)
+from printer)
+
+====================================================================================================================================
+EX_11
+Найдите среднюю скорость ПК.
+
+Select avg(speed)
+from pc
+
+====================================================================================================================================
+EX_12
+Найдите среднюю скорость ПК-блокнотов, цена которых превышает 1000 дол.
+
+Select avg(speed)
+from laptop
+where price > 1000
+
+====================================================================================================================================
+EX_13
+Найдите среднюю скорость ПК, выпущенных производителем A.
+
+Select AVG(speed)
+From PC
+join product
+on product.model=pc.model
+where maker = 'a'
+
+====================================================================================================================================
+EX_14
+Найдите класс, имя и страну для кораблей из таблицы Ships, имеющих не менее 10 орудий.
+
+Select s.class, s.name, c.country
+from ships as s
+inner join classes as c
+on s.class = c.class
+where numGuns >=10
+
+====================================================================================================================================
+EX_15
+Найдите размеры жестких дисков, совпадающих у двух и более PC. Вывести: HD
+
+Select pc.hd
+from pc
+group by hd
+Having count (hd) >= 2
+
+====================================================================================================================================
+EX_16
+Найдите пары моделей PC, имеющих одинаковые скорость и RAM. В результате каждая пара указывается только один раз, 
+т.е. (i,j), но не (j,i), Порядок вывода: модель с большим номером, модель с меньшим номером, скорость и RAM.
+
+SELECT DISTINCT p1.model as m1, p2.model as m2, p1.speed, p1.ram
+FROM pc p1, pc p2
+WHERE p1.speed = p2.speed AND p1.ram = p2.ram AND p1.model > p2.model
+
+====================================================================================================================================
+EX_17
+Найдите модели ПК-блокнотов, скорость которых меньше скорости каждого из ПК.
+Вывести: type, model, speed
+
+select distinct p.type, p.model, l.speed
+from laptop l
+join product p on l.model = p.model
+where l.speed < (select min(speed) from pc)
+
+====================================================================================================================================
+EX_18
+Найдите производителей самых дешевых цветных принтеров. Вывести: maker, price
+
+SELECT DISTINCT product.maker, printer.price
+FROM product, printer
+WHERE product.model = printer.model
+AND printer.color = 'y'
+AND printer.price = (
+SELECT MIN(price) FROM printer
+WHERE printer.color = 'y'
+)
+
+====================================================================================================================================
+EX_19
+Для каждого производителя, имеющего модели в таблице Laptop, найдите средний размер экрана выпускаемых им ПК-блокнотов.
+Вывести: maker, средний размер экрана.
+
+Select maker, avg(screen) as avs
+from laptop l1
+join product p1 on  p1.model=l1.model
+group by maker
+
+====================================================================================================================================
+EX_20
+Найдите производителей, выпускающих по меньшей мере три различных модели ПК. Вывести: Maker, число моделей ПК.
+
+SELECT maker, COUNT(model)
+FROM product
+WHERE type = 'pc'
+GROUP BY product.maker
+HAVING COUNT (DISTINCT model) >= 3
+
+====================================================================================================================================
+EX_21
+Найдите максимальную цену ПК, выпускаемых каждым производителем, у которого есть модели в таблице PC.
+Вывести: maker, максимальная цена.
+
+select product.maker, max(pc.price)
+from pc join product on pc.model=product.model
+group by product.maker
+
+====================================================================================================================================
+EX_22
+Для каждого значения скорости ПК, превышающего 600 МГц, определите среднюю цену ПК с такой же скоростью. Вывести: speed, средняя цена.
+
+Select pc.speed, avg(pc.price)
+from pc
+where pc.speed > 600
+group by speed
+
+====================================================================================================================================
+EX_23
+Найдите производителей, которые производили бы как ПК со скоростью не менее 750 МГц, так и ПК-блокноты со скоростью не менее 750 МГц.
+Вывести: Maker
+
+Первый вариант решения
+Select p1.maker
+from product p1
+join laptop l1 on l1.model=p1.model
+where l1.speed >= 750
+union
+select p2.maker
+from product p2
+join pc on pc.model=p2.model
+where pc.speed >=750
+
+Второй вариант решения
+select distinct product.maker
+from product, pc
+where product.model = pc.model
+and product.type = 'PC'
+and pc.speed >= 750
+and exists(select 'x' from laptop, product p
+where p.model = laptop.model
+and p.type = 'Laptop'
+and p.maker = product.maker
+and laptop.speed >= 750)
+
+====================================================================================================================================
+EX_24
+Перечислите номера моделей любых типов, имеющих самую высокую цену по всей имеющейся в базе данных продукции.
+
+Select model from (
+Select model, price from pc
+UNION
+Select model, price from laptop
+UNION
+Select model, price from printer
+) is_table where price = (
+Select MAX(price) FROM(
+Select model, price from pc
+UNION
+Select model, price from laptop
+UNION
+Select model, price from printer
+) is_table_2
+)
+
+====================================================================================================================================
+EX_25
+Найдите производителей принтеров, которые производят ПК с наименьшим объемом RAM и с самым быстрым процессором среди всех ПК, имеющих наименьший объем RAM. 
+Вывести: Maker.
+
+Select Distinct maker from product join pc on pc.model=product.model 
+where maker IN (Select Distinct maker from product where type = 'printer'
+) and speed = (select MAX(speed) from pc where ram = (select min(ram) from pc)) and ram = (SELECT MIN(ram) from pc)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
